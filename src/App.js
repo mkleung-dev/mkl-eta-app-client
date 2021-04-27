@@ -1,43 +1,40 @@
 import React from 'react'
 import './App.css';
 import { Container, Nav, Navbar, NavItem } from "react-bootstrap";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import AllBusRouteTable from './components/AllBusRouteTable';
-import BusRouteTable from './components/BusRouteTable';
-import AllBusStopTable from './components/AllBusStopTable';
-import BusRouteETATable from './components/BusRouteETATable'
+import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
+import KmbRouteETATable from './components/KmbRouteETATable';
+import AllKmbRouteTable from './components/AllKmbRouteTable';
+import AllKmbStopTable from './components/AllKmbStopTable';
 
 
 function App() {
   return (
     <div className="App container">
       <Navbar bg="dark" variant="dark">
-        <Navbar.Brand href="/">Kmb Bus</Navbar.Brand>
+        <Navbar.Brand href="/">交通工具到達時間</Navbar.Brand>
         <Nav className="mr-auto">
-          <Nav.Link href="/all_bus_route">All Bus Route</Nav.Link>
-          <Nav.Link href="/all_bus_stop">All Bus Stop</Nav.Link>
+          <Nav.Link href="/all_kmb_route">所有九巴路線</Nav.Link>
+          {/*<Nav.Link href="/all_bus_stop">All Bus Stop</Nav.Link>*/}
         </Nav>
       </Navbar>
       <Router>
         <Switch>
-          <Route path="/bus_route/:route/:bound/:service_type">
+          <Route exact path="/">
+            <Redirect to="/all_kmb_route"></Redirect>
+          </Route>
+          <Route exact path="/bus_route/:route/:bound/:service_type">
             <Container>
-              <BusRouteTable></BusRouteTable>
+              <KmbRouteETATable></KmbRouteETATable>
             </Container>
           </Route>
-          <Route path="/bus_route_eta/:route/:service_type">
+          <Route exact path="/all_kmb_route">
             <Container>
-              <BusRouteETATable></BusRouteETATable>
-            </Container>
-          </Route>
-          <Route exact path="/all_bus_route">
-            <Container>
-              <AllBusRouteTable></AllBusRouteTable>
+              <AllKmbRouteTable></AllKmbRouteTable>
             </Container>
           </Route>
           <Route exact path="/all_bus_stop">
             <Container>
-              <AllBusStopTable></AllBusStopTable>
+              <AllKmbStopTable></AllKmbStopTable>
             </Container>
           </Route>
         </Switch>

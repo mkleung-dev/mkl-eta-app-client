@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Table, Button } from 'react-bootstrap';
-import './AllBusRouteTable.css';
+import './KmbRouteETATable.css';
 
 const initialState = {
   error: null,
@@ -8,7 +8,7 @@ const initialState = {
   response: null,
 };
 
-function AllBusRouteTable() {
+function KmbRouteETATable() {
   const [ allBusRouteData, setAllBusRouteData ] = useState(initialState)
 
   useEffect(() => {
@@ -37,7 +37,7 @@ function AllBusRouteTable() {
   return (
     <Table>
       <tr>
-            <th>號碼</th>
+            <th>路線</th>
             <th>頭站</th>
             <th>尾站</th>
             <th>到站時間</th>
@@ -68,4 +68,4 @@ function AllBusRouteTable() {
   );
 }
 
-export default AllBusRouteTable;
+export default KmbRouteETATable;

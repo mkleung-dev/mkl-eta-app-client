@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { Container, Table } from 'react-bootstrap';
+import { Container, Spinner, Table } from 'react-bootstrap';
 import { useParams } from 'react-router';
-import './BusRouteTable.css';
+import './KmbRouteETATable.css';
 
 const initialState = {
   etaLoaded: false,
@@ -11,7 +11,7 @@ const initialState = {
   response: null,
 };
 
-function BusRouteTable() {
+function KmbRouteTable() {
   const [ width, setWidth ] = useState(window.innerWidth);
   const [ busRouteData, setBusRouteData ] = useState(initialState)
   const { route, bound, service_type } = useParams()
@@ -113,13 +113,13 @@ function BusRouteTable() {
     <Table>
       <tr>
         <th>巴士站</th>
-        <th>到站時間</th>
+        <th>下一班時間</th>
         <th>等候時間</th>
         { width > 1024 &&
           <>
-            <th>到站時間</th>
+            <th>下二班時間</th>
             <th>等候時間</th>
-            <th>到站時間</th>
+            <th>下三班時間</th>
             <th>等候時間</th>
           </>
         }
@@ -154,6 +154,30 @@ function BusRouteTable() {
                 </>
               )) : (
                 <>
+                  <td>
+                    <Spinner animation="border" />
+                  </td>
+                  <td>
+                    <Spinner animation="border" />
+                  </td>
+                  {
+                    width > 1024 && (
+                      <>
+                        <td>
+                          <Spinner animation="border" />
+                        </td>
+                        <td>
+                          <Spinner animation="border" />
+                        </td>
+                        <td>
+                          <Spinner animation="border" />
+                        </td>
+                        <td>
+                          <Spinner animation="border" />
+                        </td>
+                      </>
+                    )
+                  }
                 </>
               )
             }
@@ -169,4 +193,4 @@ function BusRouteTable() {
   );
 }
 
-export default BusRouteTable;
+export default KmbRouteTable;
