@@ -37,10 +37,9 @@ function AllBusRouteTable() {
   return (
     <Table>
       <tr>
-            <th>巴士號碼</th>
+            <th>號碼</th>
             <th>頭站</th>
             <th>尾站</th>
-            <th>巴士站</th>
             <th>到站時間</th>
         {/*
           allBusRouteData.response && (
@@ -56,8 +55,7 @@ function AllBusRouteTable() {
             <td>{route.route}</td>
             <td>{route.orig_tc}</td>
             <td>{route.dest_tc}</td>
-            <td><Button href={`/bus_route/${route.route}/${route.bound}/${route.service_type}`}>巴士站</Button></td>
-            <td><Button href={`/bus_route_eta/${route.route}/${route.service_type}`}>到站時間</Button></td>
+            <td><Button href={`/bus_route/${route.route}/${route.bound}/${route.service_type}`}>到站時間</Button></td>
             {/*
               Object.entries(route).map(([key, data]) => 
                 <td>{data}</td>
