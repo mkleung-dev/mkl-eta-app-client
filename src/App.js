@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-d
 import KmbRouteETATable from './components/KmbRouteETATable';
 import AllKmbRouteTable from './components/AllKmbRouteTable';
 import AllKmbStopTable from './components/AllKmbStopTable';
+import FavouriteETATable from './components/FavouriteETATable'
 
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
         <Navbar.Brand href="/">交通工具到達時間</Navbar.Brand>
         <Nav className="mr-auto">
           <Nav.Link href="/all_kmb_route">所有九巴路線</Nav.Link>
+          <Nav.Link href="/favourites">最愛路線</Nav.Link>
           {/*<Nav.Link href="/all_bus_stop">All Bus Stop</Nav.Link>*/}
         </Nav>
       </Navbar>
@@ -32,9 +34,9 @@ function App() {
               <AllKmbRouteTable></AllKmbRouteTable>
             </Container>
           </Route>
-          <Route exact path="/all_bus_stop">
+          <Route exact path="/favourites">
             <Container>
-              <AllKmbStopTable></AllKmbStopTable>
+              <FavouriteETATable></FavouriteETATable>
             </Container>
           </Route>
         </Switch>

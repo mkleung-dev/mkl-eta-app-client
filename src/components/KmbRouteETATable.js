@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Container, Spinner, Table, Button } from 'react-bootstrap';
+import { Spinner, Table, Button } from 'react-bootstrap';
 import { useParams } from 'react-router';
 import './KmbRouteETATable.css';
 
@@ -11,8 +11,8 @@ const initialState = {
   response: null,
 };
 
-function KmbRouteTable() {
-  const [ favouriteBuffer, setFavouriteBuffer] = useState([]);
+function KmbRouteETATable() {
+  const [ favouriteBuffer, setFavouriteBuffer] = useState({"KmbFavourites": []});
   const [ width, setWidth ] = useState(window.innerWidth);
   const [ busRouteData, setBusRouteData ] = useState(initialState)
   const { route, bound, service_type } = useParams()
@@ -24,8 +24,8 @@ function KmbRouteTable() {
   }
 
   useEffect(() => {
-    let favourites = {"favourites": []};
-    let favouritesString = localStorage.getItem('favourites');
+    let favourites = {"KmbFavourites": []};
+    let favouritesString = localStorage.getItem('KmbFavourites');
     if (favouritesString) {
       favourites = JSON.parse(favouritesString)
     }
@@ -120,8 +120,8 @@ function KmbRouteTable() {
     return (ans >= 9 ? '' : '0') + ans
   })
   const addToFavourites = ((eta) => {
-    let favourites = {"favourites": []};
-    let favouritesString = localStorage.getItem('favourites');
+    let favourites = {"KmbFavourites": []};
+    let favouritesString = localStorage.getItem('KmbFavourites');
     if (favouritesString) {
       favourites = JSON.parse(favouritesString)
     }
@@ -131,18 +131,18 @@ function KmbRouteTable() {
       "service_type": eta.service_type,
       "stop": eta.stop};
 
-    for (let i = 0; i < favourites["favourites"].length; i++) {
-      if (favourites["favourites"][i].route === favourite.route &&
-          favourites["favourites"][i].bound === favourite.bound &&
-          favourites["favourites"][i].service_type === favourite.service_type &&
-          favourites["favourites"][i].stop === favourite.stop) {
+    for (let i = 0; i < favourites["KmbFavourites"].length; i++) {
+      if (favourites["KmbFavourites"][i].route === favourite.route &&
+          favourites["KmbFavourites"][i].bound === favourite.bound &&
+          favourites["KmbFavourites"][i].service_type === favourite.service_type &&
+          favourites["KmbFavourites"][i].stop === favourite.stop) {
         return;
       }
     }
-    favourites["favourites"].push(favourite);
+    favourites["KmbFavourites"].push(favourite);
 
     setFavouriteBuffer(favourites);
-    localStorage.setItem('favourites', JSON.stringify(favourites));
+    localStorage.setItem('KmbFavourites', JSON.stringify(favourites));
   })
   const isFavourite = ((eta) => {
     let favourites = favouriteBuffer
@@ -152,20 +152,20 @@ function KmbRouteTable() {
       "service_type": eta.service_type,
       "stop": eta.stop};
 
-    for (let i = 0; i < favourites["favourites"].length; i++) {
-      if (favourites["favourites"][i].route === favourite.route &&
-          favourites["favourites"][i].bound === favourite.bound &&
-          favourites["favourites"][i].service_type === favourite.service_type &&
-          favourites["favourites"][i].stop === favourite.stop) {
+    for (let i = 0; i < favourites["KmbFavourites"].length; i++) {
+      if (favourites["KmbFavourites"][i].route === favourite.route &&
+          favourites["KmbFavourites"][i].bound === favourite.bound &&
+          favourites["KmbFavourites"][i].service_type === favourite.service_type &&
+          favourites["KmbFavourites"][i].stop === favourite.stop) {
         return true;
       }
     }
     return false;
   })
   const removeFromFavourites = ((eta) => {
-    let backupFavourites = {"favourites": []};
-    let favourites = {"favourites": []};
-    let favouritesString = localStorage.getItem('favourites');
+    let backupFavourites = {"KmbFavourites": []};
+    let favourites = {"KmbFavourites": []};
+    let favouritesString = localStorage.getItem('KmbFavourites');
     if (favouritesString) {
       favourites = JSON.parse(favouritesString)
     }
@@ -175,17 +175,17 @@ function KmbRouteTable() {
       "service_type": eta.service_type,
       "stop": eta.stop};
 
-    for (let i = 0; i < favourites["favourites"].length; i++) {
-      if (favourites["favourites"][i].route === favourite.route &&
-          favourites["favourites"][i].bound === favourite.bound &&
-          favourites["favourites"][i].service_type === favourite.service_type &&
-          favourites["favourites"][i].stop === favourite.stop) {
+    for (let i = 0; i < favourites["KmbFavourites"].length; i++) {
+      if (favourites["KmbFavourites"][i].route === favourite.route &&
+          favourites["KmbFavourites"][i].bound === favourite.bound &&
+          favourites["KmbFavourites"][i].service_type === favourite.service_type &&
+          favourites["KmbFavourites"][i].stop === favourite.stop) {
       } else {
-        backupFavourites["favourites"].push(favourites["favourites"][i]);
+        backupFavourites["KmbFavourites"].push(favourites["KmbFavourites"][i]);
       }
     }
     setFavouriteBuffer(backupFavourites);
-    localStorage.setItem('favourites', JSON.stringify(backupFavourites));
+    localStorage.setItem('KmbFavourites', JSON.stringify(backupFavourites));
   })
 
   return (
@@ -280,4 +280,4 @@ function KmbRouteTable() {
   );
 }
 
-export default KmbRouteTable;
+export default KmbRouteETATable;
