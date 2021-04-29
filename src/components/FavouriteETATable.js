@@ -36,6 +36,44 @@ function FavouriteETATable() {
     }
   }, []);
 
+  const fetchEta = (() => {
+    let requests = [];
+    for (let i = 0; i < favouriteBuffer["KmbFavourites"].length; i++) {
+      let temp = 'https://data.etabus.gov.hk/v1/transport/kmb/eta/' + 
+                 favouriteBuffer["KmbFavourites"][i].stop + '/' + 
+                 favouriteBuffer["KmbFavourites"][i].route + '/' + 
+                 favouriteBuffer["KmbFavourites"][i].service_type;
+      requests.push(temp)
+    }
+    let promises = [];
+    for (let j = 0; j < requests.length; j++) {
+      promises.push(fetch(requests[j]));
+    }
+    Promise.all(promises)
+    .then((responses) => Promise.all(responses.map(response => {
+      if(response.ok) return response.json();
+    })))
+    .then(function handleData(data) {
+      let wholeEta = [];
+      for (let i = 0; i < favouriteBuffer["KmbFavourites"].length; i++) {
+        let etaRow = favouriteBuffer["KmbFavourites"][i];
+        
+        etaRow["stop_tc"] = nameMap.data[favouriteBuffer["KmbFavourites"][i].stop].name_tc;
+        etaRow["eta"] = [];
+        
+        for (let k = 0; k < data[i].data.length; k++) {
+          if (data[i].data[k].dir === etaRow.bound) {
+            etaRow["dest_tc"] = data[i].data[k].dest_tc;
+            etaRow["eta"].push(data[i].data[k].eta);
+          }
+        }
+        wholeEta.push(etaRow)
+      }
+      setEtaData({data: wholeEta});
+      // setFetchState(2)
+    })
+  })
+
   useEffect(() => {
     if (fetchState === 0) {
       let requests = [];
@@ -72,41 +110,8 @@ function FavouriteETATable() {
         }
       })
     } else if (fetchState === 1) {
-      let requests = [];
-      for (let i = 0; i < favouriteBuffer["KmbFavourites"].length; i++) {
-        let temp = 'https://data.etabus.gov.hk/v1/transport/kmb/eta/' + 
-                   favouriteBuffer["KmbFavourites"][i].stop + '/' + 
-                   favouriteBuffer["KmbFavourites"][i].route + '/' + 
-                   favouriteBuffer["KmbFavourites"][i].service_type;
-        requests.push(temp)
-      }
-      let promises = [];
-      for (let j = 0; j < requests.length; j++) {
-        promises.push(fetch(requests[j]));
-      }
-      Promise.all(promises)
-      .then((responses) => Promise.all(responses.map(response => {
-        if(response.ok) return response.json();
-      })))
-      .then(function handleData(data) {
-        let wholeEta = [];
-        for (let i = 0; i < favouriteBuffer["KmbFavourites"].length; i++) {
-          let etaRow = favouriteBuffer["KmbFavourites"][i];
-          
-          etaRow["stop_tc"] = nameMap.data[favouriteBuffer["KmbFavourites"][i].stop].name_tc;
-          etaRow["eta"] = [];
-          
-          for (let k = 0; k < data[i].data.length; k++) {
-            if (data[i].data[k].dir === etaRow.bound) {
-              etaRow["dest_tc"] = data[i].data[k].dest_tc;
-              etaRow["eta"].push(data[i].data[k].eta);
-            }
-          }
-          wholeEta.push(etaRow)
-        }
-        setEtaData({data: wholeEta});
-        // setFetchState(2)
-      })
+      fetchEta();
+      setInterval(fetchEta , 5000);
     }
   }, [fetchState, favouriteBuffer])
 
@@ -147,35 +152,29 @@ function FavouriteETATable() {
   return (
     <Table>
       <tr>
-        <th>最愛</th>
         <th>路線</th>
-        <th>尾站</th>
-        <th>巴士站</th>
-        <th>下一班時間</th>
-        <th>等候時間</th>
+        <th>下一班</th>
         { width > 1024 &&
           <>
-            <th>下二班時間</th>
-            <th>等候時間</th>
-            <th>下三班時間</th>
-            <th>等候時間</th>
+            <th>第二班</th>
+            <th>第三班</th>
           </>
         }
+        <th>移除</th>
       </tr>
       {
         etaData.data.map((stop, i) =>
           <tr>
             <td>
-              <Button onClick={() => removeFromFavourites(stop)}>移除</Button>
+              {stop.stop_tc && (<>{stop.stop_tc}</>)}
+              {stop.route}
+              <br />往{stop.dest_tc}
             </td>
-            <td>{stop.route}</td>
-            <td>{stop.dest_tc}</td>
-            {stop.stop_tc ? <td>{stop.stop_tc}</td> : <td></td>}
             { stop.eta ? (stop.eta.map((eta, j) => 
               (width > 1024 || j === 0) &&
                 <>
-                  <td>{(new Date(Date.parse(eta))).toLocaleTimeString('zh-hk')}</td>
-                  <td>
+                  <td>{(new Date(Date.parse(eta))).toLocaleTimeString('zh-hk', {hour12: false})}
+                  <br />等候
                     { (Date.parse(eta) - (Date.now()) > 0 ? (
                         <>
                           {toMinus(Date.parse(eta) - Date.now())}:{toSecond(Date.parse(eta) - Date.now())}
@@ -217,6 +216,9 @@ function FavouriteETATable() {
                 </>
               )
             }
+            <td>
+              <Button onClick={() => removeFromFavourites(stop)}>X</Button>
+            </td>
           </tr>
         )
       }
