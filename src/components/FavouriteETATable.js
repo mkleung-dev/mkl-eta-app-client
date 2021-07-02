@@ -10,9 +10,8 @@ import './FavouriteETATable.css';
 //   "stop": eta.stop};
 
 function FavouriteETATable() {
-  const [ favouriteBuffer, setFavouriteBuffer] = useState({"KmbFavourites": []});
   const [ width, setWidth ] = useState(window.innerWidth);
-  const [ fetchState, setFetchState ] = useState(0)
+  const [ fetchState, setFetchState ] = useState(0);
   const [ etaData, setEtaData ] = useState({data: []});
   const [ nameMap, setNameMap ] = useState({data: {}});
 
@@ -21,22 +20,61 @@ function FavouriteETATable() {
   }
 
   useEffect(() => {
-    let favourites = {"KmbFavourites": []};
-    let favouritesString = localStorage.getItem('KmbFavourites');
-    if (favouritesString) {
-      favourites = JSON.parse(favouritesString)
-    }
-    setFavouriteBuffer(favourites)
-  }, [])
-
-  useEffect(() => {
     window.addEventListener('resize', handleWindowSizeChange);
     return () => {
         window.removeEventListener('resize', handleWindowSizeChange);
     }
   }, []);
 
-  const fetchEta = (() => {
+  const fetchStop = (() => {
+    let favourites = {"KmbFavourites": []};
+    let favouritesString = localStorage.getItem('KmbFavourites');
+    if (favouritesString) {
+      favourites = JSON.parse(favouritesString)
+    }
+    let favouriteBuffer = favourites;
+    let requests = [];
+    for (let i = 0; i < favouriteBuffer["KmbFavourites"].length; i++) {
+      let temp = 'https://data.etabus.gov.hk/v1/transport/kmb/stop/' + favouriteBuffer["KmbFavourites"][i].stop;
+      let add = true;
+      for (let j = 0; j < requests.length; j++) {
+        if (temp === requests[j]) {
+          add = false;
+        }
+      }
+      if (add) {
+        requests.push(temp)
+      }
+    }
+    let promises = [];
+    for (let j = 0; j < requests.length; j++) {
+      promises.push(fetch(requests[j]));
+    }
+    Promise.all(promises)
+    .then((responses) => Promise.all(responses.map(response => {
+      if(response.ok) return response.json();
+    })))
+    .then(function handleData(data) {
+      let dict = {};
+      for (let i = 0; i < data.length; i++) {
+        dict[data[i].data.stop] = {"name_tc": data[i].data.name_tc};
+      }
+      if (data.length > 0) {
+        setNameMap({
+          data: dict,
+        });
+        setFetchState(1)
+      }
+    })
+  })
+
+  const fetchEta = ((update) => {
+    let favourites = {"KmbFavourites": []};
+    let favouritesString = localStorage.getItem('KmbFavourites');
+    if (favouritesString) {
+      favourites = JSON.parse(favouritesString)
+    }
+    let favouriteBuffer = favourites;
     let requests = [];
     for (let i = 0; i < favouriteBuffer["KmbFavourites"].length; i++) {
       let temp = 'https://data.etabus.gov.hk/v1/transport/kmb/eta/' + 
@@ -70,50 +108,20 @@ function FavouriteETATable() {
         wholeEta.push(etaRow)
       }
       setEtaData({data: wholeEta});
-      // setFetchState(2)
+      setFetchState(2)
+      if (update) {
+        setTimeout(() => fetchEta(true), 10000);
+      }
     })
   })
 
   useEffect(() => {
     if (fetchState === 0) {
-      let requests = [];
-      for (let i = 0; i < favouriteBuffer["KmbFavourites"].length; i++) {
-        let temp = 'https://data.etabus.gov.hk/v1/transport/kmb/stop/' + favouriteBuffer["KmbFavourites"][i].stop;
-        let add = true;
-        for (let j = 0; j < requests.length; j++) {
-          if (temp === requests[j]) {
-            add = false;
-          }
-        }
-        if (add) {
-          requests.push(temp)
-        }
-      }
-      let promises = [];
-      for (let j = 0; j < requests.length; j++) {
-        promises.push(fetch(requests[j]));
-      }
-      Promise.all(promises)
-      .then((responses) => Promise.all(responses.map(response => {
-        if(response.ok) return response.json();
-      })))
-      .then(function handleData(data) {
-        let dict = {};
-        for (let i = 0; i < data.length; i++) {
-          dict[data[i].data.stop] = {"name_tc": data[i].data.name_tc};
-        }
-        if (data.length > 0) {
-          setNameMap({
-            data: dict,
-          });
-          setFetchState(1)
-        }
-      })
+      fetchStop();
     } else if (fetchState === 1) {
-      fetchEta();
-      setInterval(fetchEta , 5000);
+      fetchEta(true);
     }
-  }, [fetchState, favouriteBuffer])
+  }, [fetchState])
 
   const toMinus = (ms => {
     return '' + parseInt(ms / 60000)
@@ -145,8 +153,8 @@ function FavouriteETATable() {
         backupFavourites["KmbFavourites"].push(favourites["KmbFavourites"][i]);
       }
     }
-    setFavouriteBuffer(backupFavourites);
     localStorage.setItem('KmbFavourites', JSON.stringify(backupFavourites));
+    fetchEta(false);
   })
 
   return (
@@ -167,17 +175,17 @@ function FavouriteETATable() {
           <tr>
             <td>
               {stop.stop_tc && (<>{stop.stop_tc}</>)}
-              {stop.route}
+              <b>{stop.route}</b>
               <br />往{stop.dest_tc}
             </td>
-            { stop.eta ? (stop.eta.map((eta, j) => 
-              (width > 1024 || j === 0) &&
+            { stop.eta ? (
                 <>
-                  <td>{(new Date(Date.parse(eta))).toLocaleTimeString('zh-hk', {hour12: false})}
-                  <br />等候
-                    { (Date.parse(eta) - (Date.now()) > 0 ? (
+                { stop.eta[0] ? (
+                  <td>{(new Date(Date.parse(stop.eta[0]))).toLocaleTimeString('zh-hk', {hour12: false})}
+                    <br />還剩　
+                    { (Date.parse(stop.eta[0]) - (Date.now()) > 0 ? (
                         <>
-                          {toMinus(Date.parse(eta) - Date.now())}:{toSecond(Date.parse(eta) - Date.now())}
+                          {toMinus(Date.parse(stop.eta[0]) - Date.now())}:{toSecond(Date.parse(stop.eta[0]) - Date.now())}
                         </>
                       ) : (
                         <>
@@ -186,24 +194,59 @@ function FavouriteETATable() {
                       )
                     )}
                   </td>
-                </>
-              )) : (
-                <>
+                ) : (
                   <td>
-                    <Spinner animation="border" />
                   </td>
+                )}
+                {width > 1024 && (
+                  <>
+                    { stop.eta[1] ? (
+                      <td>{(new Date(Date.parse(stop.eta[0]))).toLocaleTimeString('zh-hk', {hour12: false})}
+                        <br />還剩　
+                        { (Date.parse(stop.eta[0]) - (Date.now()) > 0 ? (
+                            <>
+                              {toMinus(Date.parse(stop.eta[0]) - Date.now())}:{toSecond(Date.parse(stop.eta[0]) - Date.now())}
+                            </>
+                          ) : (
+                            <>
+                              0:00
+                            </>
+                          )
+                        )}
+                      </td>
+                    ) : (
+                      <td>
+                      </td>
+                    )}
+                    { stop.eta[2] ? (
+                      <td>{(new Date(Date.parse(stop.eta[0]))).toLocaleTimeString('zh-hk', {hour12: false})}
+                        <br />還剩　
+                        { (Date.parse(stop.eta[0]) - (Date.now()) > 0 ? (
+                            <>
+                              {toMinus(Date.parse(stop.eta[0]) - Date.now())}:{toSecond(Date.parse(stop.eta[0]) - Date.now())}
+                            </>
+                          ) : (
+                            <>
+                              0:00
+                            </>
+                          )
+                        )}
+                      </td>
+                    ) : (
+                      <td>
+                      </td>
+                    )}
+                  </>
+                )}
+                </>
+              ) : (
+                <>
                   <td>
                     <Spinner animation="border" />
                   </td>
                   {
                     width > 1024 && (
                       <>
-                        <td>
-                          <Spinner animation="border" />
-                        </td>
-                        <td>
-                          <Spinner animation="border" />
-                        </td>
                         <td>
                           <Spinner animation="border" />
                         </td>

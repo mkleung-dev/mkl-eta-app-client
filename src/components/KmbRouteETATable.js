@@ -191,18 +191,18 @@ function KmbRouteETATable() {
   return (
     <Table>
       <tr>
-        <th>最愛</th>
+      <th colSpan={width > 1024 ? 5 : 3}>路線　{route}</th>
+      </tr>
+      <tr>
         <th>巴士站</th>
-        <th>下一班時間</th>
-        <th>等候時間</th>
+        <th>下一班</th>
         { width > 1024 &&
           <>
-            <th>下二班時間</th>
-            <th>等候時間</th>
-            <th>下三班時間</th>
-            <th>等候時間</th>
+            <th>第二班</th>
+            <th>第三班</th>
           </>
         }
+        <th>最愛</th>
         {/*
           busRouteData.response && (
             Object.entries(busRouteData.response.data[0]).map(([key, data]) => 
@@ -214,22 +214,15 @@ function KmbRouteETATable() {
         busRouteData.response && (
           busRouteData.response.data.map((stop, i) =>
           <tr>
-            <td>
-              { !isFavourite(stop) ? 
-                  <Button onClick={() => addToFavourites(stop)}>加入</Button>
-                :
-                <Button onClick={() => removeFromFavourites(stop)}>移除</Button>
-              }
-            </td>
             <td>{stop.name_tc}</td>
-            { stop.eta ? (stop.eta.map((eta, j) => 
-              (width > 1024 || j === 0) &&
+            { stop.eta ? (
                 <>
-                  <td>{(new Date(Date.parse(eta))).toLocaleTimeString('zh-hk')}</td>
-                  <td>
-                    { (Date.parse(eta) - (Date.now()) > 0 ? (
+                { stop.eta[0] ? (
+                  <td>{(new Date(Date.parse(stop.eta[0]))).toLocaleTimeString('zh-hk', {hour12: false})}
+                    <br />還剩　
+                    { (Date.parse(stop.eta[0]) - (Date.now()) > 0 ? (
                         <>
-                          {toMinus(Date.parse(eta) - Date.now())}:{toSecond(Date.parse(eta) - Date.now())}
+                          {toMinus(Date.parse(stop.eta[0]) - Date.now())}:{toSecond(Date.parse(stop.eta[0]) - Date.now())}
                         </>
                       ) : (
                         <>
@@ -238,12 +231,53 @@ function KmbRouteETATable() {
                       )
                     )}
                   </td>
-                </>
-              )) : (
-                <>
+                ) : (
                   <td>
-                    <Spinner animation="border" />
                   </td>
+                )}
+                {width > 1024 && (
+                  <>
+                    { stop.eta[1] ? (
+                      <td>{(new Date(Date.parse(stop.eta[0]))).toLocaleTimeString('zh-hk', {hour12: false})}
+                        <br />還剩　
+                        { (Date.parse(stop.eta[0]) - (Date.now()) > 0 ? (
+                            <>
+                              {toMinus(Date.parse(stop.eta[0]) - Date.now())}:{toSecond(Date.parse(stop.eta[0]) - Date.now())}
+                            </>
+                          ) : (
+                            <>
+                              0:00
+                            </>
+                          )
+                        )}
+                      </td>
+                    ) : (
+                      <td>
+                      </td>
+                    )}
+                    { stop.eta[2] ? (
+                      <td>{(new Date(Date.parse(stop.eta[0]))).toLocaleTimeString('zh-hk', {hour12: false})}
+                        <br />還剩　
+                        { (Date.parse(stop.eta[0]) - (Date.now()) > 0 ? (
+                            <>
+                              {toMinus(Date.parse(stop.eta[0]) - Date.now())}:{toSecond(Date.parse(stop.eta[0]) - Date.now())}
+                            </>
+                          ) : (
+                            <>
+                              0:00
+                            </>
+                          )
+                        )}
+                      </td>
+                    ) : (
+                      <td>
+                      </td>
+                    )}
+                  </>
+                )}
+                </>
+              ) : (
+                <>
                   <td>
                     <Spinner animation="border" />
                   </td>
@@ -256,23 +290,19 @@ function KmbRouteETATable() {
                         <td>
                           <Spinner animation="border" />
                         </td>
-                        <td>
-                          <Spinner animation="border" />
-                        </td>
-                        <td>
-                          <Spinner animation="border" />
-                        </td>
                       </>
                     )
                   }
                 </>
               )
             }
-            {/*
-              Object.entries(shop).map(([key, data]) => 
-                <td>{data}</td>
-              )
-            */}
+            <td>
+              { !isFavourite(stop) ? 
+                  <Button onClick={() => addToFavourites(stop)}>＋</Button>
+                :
+                <Button onClick={() => removeFromFavourites(stop)}>－</Button>
+              }
+            </td>
           </tr>
         ))
       }
