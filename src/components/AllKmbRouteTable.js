@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import { Table, Button } from 'react-bootstrap';
+import SortableTable from './SortableTable';
 import './KmbRouteETATable.css';
 
 const initialState = {
@@ -34,37 +35,63 @@ function KmbRouteETATable() {
     });  
   }, [allBusRouteData])
 
-  return (
-    <Table>
-      <tr>
-            <th>路線</th>
-            <th>頭站</th>
-            <th>尾站</th>
-            <th>到站時間</th>
-        {/*
-          allBusRouteData.response && (
-            Object.entries(allBusRouteData.response.data[0]).map(([key, data]) => 
-            <th>{key}</th>
-          ))
-        */}
-      </tr>
-      {
-        allBusRouteData.response && (
-        allBusRouteData.response.data.map((route, i) =>
-          <tr>
-            <td>{route.route}</td>
-            <td>{route.orig_tc}</td>
-            <td>{route.dest_tc}</td>
-            <td><Button href={`/bus_route/${route.route}/${route.bound}/${route.service_type}`}>到站時間</Button></td>
-            {/*
-              Object.entries(route).map(([key, data]) => 
-                <td>{data}</td>
-              )
-            */}
-          </tr>
-        ))
+  function getDisplayData() {
+    let temp = [];
+    let postfix = [];
+    if (allBusRouteData.response) {
+      for (let i = 0; i < allBusRouteData.response.data.length; i++) {
+        temp.push([
+          allBusRouteData.response.data[i].route,
+          allBusRouteData.response.data[i].orig_tc,
+          allBusRouteData.response.data[i].dest_tc,
+          '',
+        ])
+        postfix.push([
+          '',
+          '',
+          '',
+          <><Button href={`/bus_route/${ allBusRouteData.response.data[i].route}/${ allBusRouteData.response.data[i].bound}/${ allBusRouteData.response.data[i].service_type}`}>到站時間</Button></>
+          ,
+        ])
       }
-    </Table>
+    }
+    return {
+      data: temp,
+      postfix: postfix,
+    };
+  }
+  let data = getDisplayData();
+  
+  let config = {
+    col: [
+      { content: "路線", align: "center", width: "15%", },
+      { content: "頭站", align: "center", width: "35%", },
+      { content: "尾站", align: "center", width: "35%", },
+      { content: "到站時間", align: "center", width: "15%", },
+    ],
+  };
+  let filter = {
+    col: [
+      { text: "過濾路線", type: "match", },
+      { text: "過濾頭站", type: "match", },
+      { text: "過濾尾站", type: "match", },
+      { text: "", type: "", },
+    ],
+  };
+  let sort = {
+    col: [
+      { type: "string" },
+      { type: "string" },
+      { type: "string" },
+      { type: "" },
+    ],
+    colIndex: 0,
+    asc: true,
+  };
+  return (
+    <>
+      <SortableTable config={config} sort={sort} data={data} filter={filter}></SortableTable>
+    </>
   );
 }
 

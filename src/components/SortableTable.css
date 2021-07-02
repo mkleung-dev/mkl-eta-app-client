@@ -1,0 +1,4 @@
+.adv_cell {
+  max-height: 200px !important;
+  /* You might also want to add `!important` to automatically override all media-queries. */
+}
