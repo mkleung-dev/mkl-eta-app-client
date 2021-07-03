@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { Spinner, Table, Button } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import { useParams } from 'react-router';
+import SortableTable from './SortableTable';
 import './KmbRouteETATable.css';
 
 const initialState = {
@@ -188,125 +189,191 @@ function KmbRouteETATable() {
     localStorage.setItem('KmbFavourites', JSON.stringify(backupFavourites));
   })
 
-  return (
-    <Table>
-      <tr>
-      <th colSpan={width > 1024 ? 5 : 3}>路線　{route}</th>
-      </tr>
-      <tr>
-        <th>巴士站</th>
-        <th>下一班</th>
-        { width > 1024 &&
-          <>
-            <th>第二班</th>
-            <th>第三班</th>
-          </>
-        }
-        <th>最愛</th>
-        {/*
-          busRouteData.response && (
-            Object.entries(busRouteData.response.data[0]).map(([key, data]) => 
-            <th>{key}</th>
-          ))
-          */}
-      </tr>
-      {
-        busRouteData.response && (
-          busRouteData.response.data.map((stop, i) =>
-          <tr>
-            <td>{stop.name_tc}</td>
-            { stop.eta ? (
+  function getDisplayData() {
+    let temp = [];
+    let postfix = [];
+    if (busRouteData.response) {
+      for (let i = 0; i < busRouteData.response.data.length; i++) {
+        let stop = busRouteData.response.data[i];
+
+        let data0 = stop.name_tc;
+        let data1 = "";
+        let data2 = "";
+        let data3 = "";
+        let data4 = "";
+        let postfix0 = "";
+        let postfix1 = "";
+        let postfix2 = "";
+        let postfix3 = "";
+        let postfix4 = "";
+
+        if (stop.eta && stop.eta[0]) {
+          data1 = <>
+          {(
+            new Date(Date.parse(stop.eta[0]))).toLocaleTimeString('zh-hk', {hour12: false})}
+            <br />還剩　
+            {
+              (
+                Date.parse(stop.eta[0]) - (Date.now()) > 0 ? (
                 <>
-                { stop.eta[0] ? (
-                  <td>{(new Date(Date.parse(stop.eta[0]))).toLocaleTimeString('zh-hk', {hour12: false})}
-                    <br />還剩　
-                    { (Date.parse(stop.eta[0]) - (Date.now()) > 0 ? (
-                        <>
-                          {toMinus(Date.parse(stop.eta[0]) - Date.now())}:{toSecond(Date.parse(stop.eta[0]) - Date.now())}
-                        </>
-                      ) : (
-                        <>
-                          0:00
-                        </>
-                      )
-                    )}
-                  </td>
+                  {toMinus(Date.parse(stop.eta[0]) - Date.now())}:{toSecond(Date.parse(stop.eta[0]) - Date.now())}
+                </>
                 ) : (
-                  <td>
-                  </td>
-                )}
-                {width > 1024 && (
                   <>
-                    { stop.eta[1] ? (
-                      <td>{(new Date(Date.parse(stop.eta[0]))).toLocaleTimeString('zh-hk', {hour12: false})}
-                        <br />還剩　
-                        { (Date.parse(stop.eta[0]) - (Date.now()) > 0 ? (
-                            <>
-                              {toMinus(Date.parse(stop.eta[0]) - Date.now())}:{toSecond(Date.parse(stop.eta[0]) - Date.now())}
-                            </>
-                          ) : (
-                            <>
-                              0:00
-                            </>
-                          )
-                        )}
-                      </td>
-                    ) : (
-                      <td>
-                      </td>
-                    )}
-                    { stop.eta[2] ? (
-                      <td>{(new Date(Date.parse(stop.eta[0]))).toLocaleTimeString('zh-hk', {hour12: false})}
-                        <br />還剩　
-                        { (Date.parse(stop.eta[0]) - (Date.now()) > 0 ? (
-                            <>
-                              {toMinus(Date.parse(stop.eta[0]) - Date.now())}:{toSecond(Date.parse(stop.eta[0]) - Date.now())}
-                            </>
-                          ) : (
-                            <>
-                              0:00
-                            </>
-                          )
-                        )}
-                      </td>
-                    ) : (
-                      <td>
-                      </td>
-                    )}
+                    0:00
                   </>
-                )}
-                </>
-              ) : (
-                <>
-                  <td>
-                    <Spinner animation="border" />
-                  </td>
-                  {
-                    width > 1024 && (
-                      <>
-                        <td>
-                          <Spinner animation="border" />
-                        </td>
-                        <td>
-                          <Spinner animation="border" />
-                        </td>
-                      </>
-                    )
-                  }
-                </>
+                )
               )
             }
-            <td>
-              { !isFavourite(stop) ? 
-                  <Button onClick={() => addToFavourites(stop)}>＋</Button>
-                :
-                <Button onClick={() => removeFromFavourites(stop)}>－</Button>
-              }
-            </td>
-          </tr>
-        ))
+          </>;
+        }
+
+        if (stop.eta && stop.eta[1]) {
+          data2 = <>
+          {(
+            new Date(Date.parse(stop.eta[1]))).toLocaleTimeString('zh-hk', {hour12: false})}
+            <br />還剩　
+            {
+              (
+                Date.parse(stop.eta[1]) - (Date.now()) > 0 ? (
+                <>
+                  {toMinus(Date.parse(stop.eta[1]) - Date.now())}:{toSecond(Date.parse(stop.eta[1]) - Date.now())}
+                </>
+                ) : (
+                  <>
+                    0:00
+                  </>
+                )
+              )
+            }
+          </>;
+        } 
+
+        if (stop.eta && stop.eta[2]) {
+          data3 = <>
+          {(
+            new Date(Date.parse(stop.eta[2]))).toLocaleTimeString('zh-hk', {hour12: false})}
+            <br />還剩　
+            {
+              (
+                Date.parse(stop.eta[2]) - (Date.now()) > 0 ? (
+                <>
+                  {toMinus(Date.parse(stop.eta[2]) - Date.now())}:{toSecond(Date.parse(stop.eta[2]) - Date.now())}
+                </>
+                ) : (
+                  <>
+                    0:00
+                  </>
+                )
+              )
+            }
+          </>;
+        } 
+          
+
+        if (!isFavourite(stop)) {
+          postfix4 = <Button onClick={() => addToFavourites(stop)}>＋</Button>;
+        } else {
+          postfix4 =  <Button onClick={() => removeFromFavourites(stop)}>－</Button>;
+        }
+        
+        if (width > 1024) {
+          temp.push([
+            data0,
+            data1,
+            data2,
+            data3,
+            data4,
+          ])
+          postfix.push([
+            postfix0,
+            postfix1,
+            postfix2,
+            postfix3,
+            postfix4,
+          ])
+        } else {
+          temp.push([
+            data0,
+            data1,
+            data4,
+          ])
+          postfix.push([
+            postfix0,
+            postfix1,
+            postfix4,
+          ])
+        }
       }
-    </Table>
+    }
+    return {
+      data: temp,
+      postfix: postfix,
+    };
+  }
+
+  let data = getDisplayData();
+  
+  let config = {
+    col: [
+      { content: "巴士站", align: "center", width: "30%", },
+      { content: "下一班", align: "center", width: "30%", },
+      { content: "最愛", align: "center", width: "20%", },
+    ],
+  };
+  let filter = {
+    col: [
+      { text: "", type: "", },
+      { text: "", type: "", },
+      { text: "", type: "", },
+    ],
+  };
+  let sort = {
+    col: [
+      { type: "" },
+      { type: "" },
+      { type: "" },
+    ],
+    colIndex: 0,
+    asc: true,
+  };
+  if (width > 1024) {
+    config = {
+      col: [
+        { content: "巴士站", align: "center", width: "20%", },
+        { content: "下一班", align: "center", width: "20%", },
+        { content: "第二班", align: "center", width: "20%", },
+        { content: "第三班", align: "center", width: "20%", },
+        { content: "最愛", align: "center", width: "10%", },
+      ],
+    };
+    filter = {
+      col: [
+        { text: "", type: "", },
+        { text: "", type: "", },
+        { text: "", type: "", },
+        { text: "", type: "", },
+        { text: "", type: "", },
+      ],
+    };
+    sort = {
+      col: [
+        { type: "" },
+        { type: "" },
+        { type: "" },
+        { type: "" },
+        { type: "" },
+      ],
+      colIndex: 0,
+      asc: true,
+    };
+  }
+
+  return (
+    <>
+      <h1>路線　{route}</h1>
+      <SortableTable config={config} data={data} filter={filter}></SortableTable>
+    </>
   );
 }
 
