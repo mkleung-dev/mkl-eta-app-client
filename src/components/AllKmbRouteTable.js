@@ -76,9 +76,9 @@ function KmbRouteETATable() {
   
   let config = {
     col: [
-      { content: "路線", align: "center", width: "25%", },
-      { content: "頭站", align: "center", width: "25%", },
-      { content: "尾站", align: "center", width: "25%", },
+      { content: <><br />路線</>, align: "center", width: "25%", },
+      { content: <><br />頭站</>, align: "center", width: "25%", },
+      { content: <><br />尾站</>, align: "center", width: "25%", },
       { content: "時間", align: "center", width: "25%", },
     ],
   };
@@ -91,6 +91,14 @@ function KmbRouteETATable() {
     ],
   };
   if (width > 1024) {
+    config = {
+      col: [
+        { content: "路線", align: "center", width: "25%", },
+        { content: "頭站", align: "center", width: "25%", },
+        { content: "尾站", align: "center", width: "25%", },
+        { content: "時間", align: "center", width: "25%", },
+      ],
+    };
     filter = {
       col: [
         { text: "路線", type: "match", clear: true},
