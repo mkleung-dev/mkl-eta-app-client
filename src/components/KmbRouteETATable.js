@@ -73,7 +73,7 @@ function KmbRouteETATable() {
       }
       Promise.all(promises)
       .then((responses) => Promise.all(responses.map(response => {
-        if(response.ok) return response.json();
+        return response.json();
       })))
       .then(function handleData(data) {
         let temp = busRouteData.response;
@@ -328,15 +328,6 @@ function KmbRouteETATable() {
       { text: "", type: "", clear: false},
     ],
   };
-  let sort = {
-    col: [
-      { type: "" },
-      { type: "" },
-      { type: "" },
-    ],
-    colIndex: 0,
-    asc: true,
-  };
   if (width > 1024) {
     config = {
       col: [
@@ -355,17 +346,6 @@ function KmbRouteETATable() {
         { text: "", type: "", clear: false},
         { text: "", type: "", clear: false},
       ],
-    };
-    sort = {
-      col: [
-        { type: "" },
-        { type: "" },
-        { type: "" },
-        { type: "" },
-        { type: "" },
-      ],
-      colIndex: 0,
-      asc: true,
     };
   }
 

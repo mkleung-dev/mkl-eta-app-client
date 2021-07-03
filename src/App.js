@@ -1,10 +1,9 @@
 import React from 'react'
 import './App.css';
-import { Container, Nav, Navbar, NavItem } from "react-bootstrap";
+import { Container, Nav, Navbar } from "react-bootstrap";
 import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
 import KmbRouteETATable from './components/KmbRouteETATable';
 import AllKmbRouteTable from './components/AllKmbRouteTable';
-import AllKmbStopTable from './components/AllKmbStopTable';
 import FavouriteETATable from './components/FavouriteETATable'
 
 

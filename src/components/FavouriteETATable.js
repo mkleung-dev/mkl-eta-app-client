@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Spinner, Table, Button } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import SortableTable from './SortableTable';
 import './FavouriteETATable.css';
 
@@ -52,7 +52,7 @@ function FavouriteETATable() {
     }
     Promise.all(promises)
     .then((responses) => Promise.all(responses.map(response => {
-      if(response.ok) return response.json();
+      return response.json();
     })))
     .then(function handleData(data) {
       let dict = {};
@@ -89,7 +89,7 @@ function FavouriteETATable() {
     }
     Promise.all(promises)
     .then((responses) => Promise.all(responses.map(response => {
-      if(response.ok) return response.json();
+      return response.json();
     })))
     .then(function handleData(data) {
       let wholeEta = [];
@@ -288,22 +288,6 @@ function FavouriteETATable() {
       { content: "移除", align: "center", width: "20%", },
     ],
   };
-  let filter = {
-    col: [
-      { text: "", type: "", },
-      { text: "", type: "", },
-      { text: "", type: "", },
-    ],
-  };
-  let sort = {
-    col: [
-      { type: "" },
-      { type: "" },
-      { type: "" },
-    ],
-    colIndex: 0,
-    asc: true,
-  };
   if (width > 1024) {
     config = {
       col: [
@@ -314,26 +298,7 @@ function FavouriteETATable() {
         { content: "移除", align: "center", width: "10%", },
       ],
     };
-    filter = {
-      col: [
-        { text: "", type: "", clear: false},
-        { text: "", type: "", clear: false},
-        { text: "", type: "", clear: false},
-        { text: "", type: "", clear: false},
-        { text: "", type: "", clear: false},
-      ],
-    };
-    sort = {
-      col: [
-        { type: "" },
-        { type: "" },
-        { type: "" },
-        { type: "" },
-        { type: "" },
-      ],
-      colIndex: 0,
-      asc: true,
-    };
+    
   }
 
   return (
