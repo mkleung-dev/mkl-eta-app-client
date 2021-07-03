@@ -316,11 +316,11 @@ function FavouriteETATable() {
     };
     filter = {
       col: [
-        { text: "", type: "", },
-        { text: "", type: "", },
-        { text: "", type: "", },
-        { text: "", type: "", },
-        { text: "", type: "", },
+        { text: "", type: "", clear: false},
+        { text: "", type: "", clear: false},
+        { text: "", type: "", clear: false},
+        { text: "", type: "", clear: false},
+        { text: "", type: "", clear: false},
       ],
     };
     sort = {

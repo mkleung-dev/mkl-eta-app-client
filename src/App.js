@@ -10,7 +10,7 @@ import FavouriteETATable from './components/FavouriteETATable'
 
 function App() {
   return (
-    <div className="App container">
+    <div>
       <Navbar bg="dark" variant="dark">
         <Navbar.Brand href="/">交通工具到達時間</Navbar.Brand>
         <Nav className="mr-auto">

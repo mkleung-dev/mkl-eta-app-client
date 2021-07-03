@@ -227,14 +227,18 @@ export const SortableTable = (props) => {
                             onChange={(event, data) => handleFilter(event, data, colIndex)} 
                             value={filterState.text[colIndex]}/>
                         </Col>
-                        <Col md="auto">
-                          <Button
-                            variant="light"
-                            onClick={(event, data) => clearFilter(event, data, colIndex)}
-                            >
-                            <i class="bi-x-circle"></i>
-                          </Button>
-                        </Col>
+                        { props.filter.col[colIndex].clear &&
+                          (
+                            <Col md="auto">
+                              <Button
+                                variant="light"
+                                onClick={(event, data) => clearFilter(event, data, colIndex)}
+                                >
+                                <i class="bi-x-circle"></i>
+                              </Button>
+                            </Col>
+                          )
+                        }
                       </Row>
                     </Form>
                   )

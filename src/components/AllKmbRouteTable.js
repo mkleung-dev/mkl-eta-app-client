@@ -10,7 +10,12 @@ const initialState = {
 };
 
 function KmbRouteETATable() {
+  const [ width, setWidth ] = useState(window.innerWidth);
   const [ allBusRouteData, setAllBusRouteData ] = useState(initialState)
+
+  const handleWindowSizeChange = () => {
+    setWidth(window.innerWidth);
+  }
 
   useEffect(() => {
     fetch('https://data.etabus.gov.hk/v1/transport/kmb/route/')
@@ -35,6 +40,13 @@ function KmbRouteETATable() {
     });  
   }, [allBusRouteData])
 
+  useEffect(() => {
+    window.addEventListener('resize', handleWindowSizeChange);
+    return () => {
+        window.removeEventListener('resize', handleWindowSizeChange);
+    }
+  }, []);
+
   function getDisplayData() {
     let temp = [];
     let postfix = [];
@@ -50,7 +62,7 @@ function KmbRouteETATable() {
           '',
           '',
           '',
-          <><Button href={`/bus_route/${ allBusRouteData.response.data[i].route}/${ allBusRouteData.response.data[i].bound}/${ allBusRouteData.response.data[i].service_type}`}>到站時間</Button></>
+          <><Button href={`/bus_route/${ allBusRouteData.response.data[i].route}/${ allBusRouteData.response.data[i].bound}/${ allBusRouteData.response.data[i].service_type}`}>時間</Button></>
           ,
         ])
       }
@@ -64,20 +76,30 @@ function KmbRouteETATable() {
   
   let config = {
     col: [
-      { content: "路線", align: "center", width: "15%", },
-      { content: "頭站", align: "center", width: "35%", },
-      { content: "尾站", align: "center", width: "35%", },
-      { content: "到站時間", align: "center", width: "15%", },
+      { content: "路線", align: "center", width: "25%", },
+      { content: "頭站", align: "center", width: "25%", },
+      { content: "尾站", align: "center", width: "25%", },
+      { content: "時間", align: "center", width: "25%", },
     ],
   };
   let filter = {
     col: [
-      { text: "過濾路線", type: "match", },
-      { text: "過濾頭站", type: "match", },
-      { text: "過濾尾站", type: "match", },
-      { text: "", type: "", },
+      { text: "路線", type: "match", clear: false},
+      { text: "頭站", type: "match", clear: false},
+      { text: "尾站", type: "match", clear: false},
+      { text: "", type: "", clear: false},
     ],
   };
+  if (width > 1024) {
+    filter = {
+      col: [
+        { text: "路線", type: "match", clear: true},
+        { text: "頭站", type: "match", clear: true},
+        { text: "尾站", type: "match", clear: true},
+        { text: "", type: "", clear: false},
+      ],
+    };
+  }
   let sort = {
     col: [
       { type: "string" },

@@ -323,9 +323,9 @@ function KmbRouteETATable() {
   };
   let filter = {
     col: [
-      { text: "", type: "", },
-      { text: "", type: "", },
-      { text: "", type: "", },
+      { text: "", type: "", clear: false},
+      { text: "", type: "", clear: false},
+      { text: "", type: "", clear: false},
     ],
   };
   let sort = {
@@ -349,11 +349,11 @@ function KmbRouteETATable() {
     };
     filter = {
       col: [
-        { text: "", type: "", },
-        { text: "", type: "", },
-        { text: "", type: "", },
-        { text: "", type: "", },
-        { text: "", type: "", },
+        { text: "", type: "", clear: false},
+        { text: "", type: "", clear: false},
+        { text: "", type: "", clear: false},
+        { text: "", type: "", clear: false},
+        { text: "", type: "", clear: false},
       ],
     };
     sort = {
@@ -371,7 +371,7 @@ function KmbRouteETATable() {
 
   return (
     <>
-      <h1>路線　{route}</h1>
+      <h1>九巴路線　{route}</h1>
       <SortableTable config={config} data={data} filter={filter}></SortableTable>
     </>
   );
