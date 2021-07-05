@@ -1,20 +1,30 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, Spinner, Form, Row, Col, Container } from 'react-bootstrap';
+import { Table, Button, Spinner, Form, Row, Col } from 'react-bootstrap';
 
 import './SortableTable.css';
 
 export const SortableTable = (props) => {
   const [ filterState , setFilterState] = useState({text: Array(props.config.col.length).fill('')});
-  const [ sortState , setSortState] = useState({colIndex: props.sort.colIndex, asc: props.sort.asc});
+  let initialSortState = {
+    colIndex: 0,
+    asc: true,
+  };
+  if (props.sort) {
+    initialSortState = {
+      colIndex: props.sort.colIndex,
+      asc: props.sort.asc,
+    };
+  }
+  const [ sortState , setSortState] = useState(initialSortState);
 
   useEffect(() => {
-    if (sortState.colIndex !== props.sort.colIndex || sortState.asc !== props.sort.asc) {
+    if (sortState.colIndex !== initialSortState.colIndex || sortState.asc !== initialSortState.asc) {
       setSortState({
-        colIndex: props.sort.colIndex, 
-        asc: props.sort.asc,
+        colIndex: initialSortState.colIndex, 
+        asc: initialSortState.asc,
       })
     }
-  }, [props.sort.colIndex, props.sort.asc]);
+  }, [initialSortState.colIndex, initialSortState.asc]);
 
   const sortBy = (event, data, colIndex) => {
     if (sortState.colIndex === colIndex) {
@@ -114,24 +124,26 @@ export const SortableTable = (props) => {
       return null;
     }
 
-    if (sortState.colIndex >= 0 && sortState.colIndex < props.sort.col.length) {
-      displayData.sort((a, b) => {
-        if (props.sort.col[sortState.colIndex].type.search('key_absolute_number') >= 0) {
-          return Math.abs(b.key[sortState.colIndex]) - Math.abs(a.key[sortState.colIndex]);
-        } else if (props.sort.col[sortState.colIndex].type.search('key_number') >= 0) {
-          return b.key[sortState.colIndex] - a.key[sortState.colIndex];
-        } else if (props.sort.col[sortState.colIndex].type.search('key_string') >= 0) {
-          return b.key[sortState.colIndex].localeCompare(a.key[sortState.colIndex])
-        } else if (props.sort.col[sortState.colIndex].type.search('absolute_number') >= 0) {
-          return Math.abs(b.data[sortState.colIndex]) - Math.abs(a.data[sortState.colIndex]);
-        } else if (props.sort.col[sortState.colIndex].type.search('number') >= 0) {
-           return b.data[sortState.colIndex] - a.data[sortState.colIndex];
-        } else {
-          return b.data[sortState.colIndex].localeCompare(a.data[sortState.colIndex])
+    if (props.sort) {
+      if (sortState.colIndex >= 0 && sortState.colIndex < props.sort.col.length) {
+        displayData.sort((a, b) => {
+          if (props.sort.col[sortState.colIndex].type.search('key_absolute_number') >= 0) {
+            return Math.abs(b.key[sortState.colIndex]) - Math.abs(a.key[sortState.colIndex]);
+          } else if (props.sort.col[sortState.colIndex].type.search('key_number') >= 0) {
+            return b.key[sortState.colIndex] - a.key[sortState.colIndex];
+          } else if (props.sort.col[sortState.colIndex].type.search('key_string') >= 0) {
+            return b.key[sortState.colIndex].localeCompare(a.key[sortState.colIndex])
+          } else if (props.sort.col[sortState.colIndex].type.search('absolute_number') >= 0) {
+            return Math.abs(b.data[sortState.colIndex]) - Math.abs(a.data[sortState.colIndex]);
+          } else if (props.sort.col[sortState.colIndex].type.search('number') >= 0) {
+            return b.data[sortState.colIndex] - a.data[sortState.colIndex];
+          } else {
+            return b.data[sortState.colIndex].localeCompare(a.data[sortState.colIndex])
+          }
+        })
+        if (sortState.asc) {
+          displayData.reverse();
         }
-      })
-      if (sortState.asc) {
-        displayData.reverse();
       }
     }
 
@@ -139,16 +151,19 @@ export const SortableTable = (props) => {
   };
 
   let sortActive = Array(props.config.col.ength).fill(false);
-  sortActive[sortState.colIndex] = true;
   let sortIcon = Array(props.config.col.length).fill('bi-sort-alpha-down');
-  for (let i = 0; i < sortIcon.length; i++) {
-    if (props.sort.col[i].type.search('number') >= 0) {
-      sortIcon[i] = sortIcon[i].replace('alpha', 'numeric');
-    }
-    if (sortState.colIndex === i) {
-      if ((props.sort.col[i].type.search('number') >= 0 && sortState.asc) ||
-          (props.sort.col[i].type.search('number') < 0 && !sortState.asc)) {
-        sortIcon[i] = sortIcon[i] + "-alt";
+
+  if (props.sort) {
+    sortActive[sortState.colIndex] = true;
+    for (let i = 0; i < sortIcon.length; i++) {
+      if (props.sort.col[i].type.search('number') >= 0) {
+        sortIcon[i] = sortIcon[i].replace('alpha', 'numeric');
+      }
+      if (sortState.colIndex === i) {
+        if ((props.sort.col[i].type.search('number') >= 0 && sortState.asc) ||
+            (props.sort.col[i].type.search('number') < 0 && !sortState.asc)) {
+          sortIcon[i] = sortIcon[i] + "-alt";
+        }
       }
     }
   }
@@ -163,30 +178,33 @@ export const SortableTable = (props) => {
           <tr>
             {props.config.col.map((element, colIndex) => (
               <th width={element.width}>
-                
-              { (props.sort.col[colIndex].type.length > 0) &&
-                (
-                  <Button
-                    block
-                    variant={sortActive[colIndex]?"success":"primary"}
-                    onClick={(event, data) => sortBy(event, data, colIndex)}
-                    >
-                    <i class={sortIcon[colIndex]}></i>
-                    {element.content}
-                  </Button>
+              {
+                (props.sort && props.sort.col[colIndex].type.length > 0 &&
+                  (
+                    <Button
+                      block
+                      variant={sortActive[colIndex]?"success":"primary"}
+                      onClick={(event, data) => sortBy(event, data, colIndex)}
+                      >
+                      <i class={sortIcon[colIndex]}></i>
+                      {element.content}
+                    </Button>
+                  )
                 )
               }
-              { (props.sort.col[colIndex].type.length === 0) &&
-                (
-                  <Button
-                    block
-                    variant="info"
-                    >
-                    {element.content}
-                  </Button>
+              {
+                ((!props.sort || props.sort.col[colIndex].type.length === 0) &&
+                  (
+                    <Button
+                      disabled
+                      block
+                      variant="dark"
+                      >
+                      {element.content}
+                    </Button>
+                  )
                 )
               }
-                {/*<Icon link name={sortIcon[colIndex]}></Icon>*/}
                 
               </th>
             ))}
@@ -209,14 +227,18 @@ export const SortableTable = (props) => {
                             onChange={(event, data) => handleFilter(event, data, colIndex)} 
                             value={filterState.text[colIndex]}/>
                         </Col>
-                        <Col md="auto">
-                          <Button
-                            variant="light"
-                            onClick={(event, data) => clearFilter(event, data, colIndex)}
-                            >
-                            <i class="bi-x-circle"></i>
-                          </Button>
-                        </Col>
+                        { props.filter.col[colIndex].clear &&
+                          (
+                            <Col md="auto">
+                              <Button
+                                variant="light"
+                                onClick={(event, data) => clearFilter(event, data, colIndex)}
+                                >
+                                <i class="bi-x-circle"></i>
+                              </Button>
+                            </Col>
+                          )
+                        }
                       </Row>
                     </Form>
                   )
@@ -238,8 +260,9 @@ export const SortableTable = (props) => {
           <>
             <tr>
               {row.data.map((element, colIndex) => ( 
-                <td
-                  align={props.config.col[colIndex].align} onClick={(event, data) => selectFilter(event, data, colIndex, element)}
+                <td className={(props.filter && props.filter.col && props.filter.col[colIndex] && props.filter.col[colIndex].type.length > 0) ? "content_cell":""}
+                  align={props.config.col[colIndex].align}
+                  onClick={(props.filter && props.filter.col && props.filter.col[colIndex] && props.filter.col[colIndex].type.length > 0) ? ((event, data) => selectFilter(event, data, colIndex, element)) : ((event, data) => {})}
                   positive={row.positive && row.positive[colIndex] && row.positive[colIndex] > 0}
                   negative={row.positive && row.positive[colIndex] && row.positive[colIndex] < 0}>
                     {row.prefix && row.prefix[colIndex]}
