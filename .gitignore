@@ -24,3 +24,4 @@ yarn-error.log*
 
 deploy
 postdeploy
+public/g*.html
