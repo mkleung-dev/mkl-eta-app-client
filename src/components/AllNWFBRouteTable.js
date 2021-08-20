@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from 'react-bootstrap';
 import SortableTable from './SortableTable';
-import './KmbRouteETATable.css';
+import './AllNWFBRouteTable.css';
 
 const initialState = {
   error: null,
@@ -9,7 +9,7 @@ const initialState = {
   response: null,
 };
 
-function KmbRouteETATable() {
+function AllNWFBRouteTable() {
   const [ width, setWidth ] = useState(window.innerWidth);
   const [ allBusRouteData, setAllBusRouteData ] = useState(initialState)
 
@@ -18,11 +18,11 @@ function KmbRouteETATable() {
   }
 
   useEffect(() => {
-    fetch('https://data.etabus.gov.hk/v1/transport/kmb/route/')
-    .then(function(response) {
+    fetch('https://rt.data.gov.hk/v1/transport/citybus-nwfb/route/nwfb')
+    .then((response) => {
       return response.json();
     })
-    .then(function(json) {
+    .then((json) => {
       setAllBusRouteData({
         ...allBusRouteData,
         error: null,
@@ -30,7 +30,7 @@ function KmbRouteETATable() {
         response: json,
       });
     })
-    .catch(function(error) {
+    .catch((error) => {
       setAllBusRouteData({
         ...allBusRouteData,
         error: error,
@@ -38,7 +38,7 @@ function KmbRouteETATable() {
         response: null,
       })
     });  
-  }, [allBusRouteData])
+  }, [])
 
   useEffect(() => {
     window.addEventListener('resize', handleWindowSizeChange);
@@ -62,7 +62,7 @@ function KmbRouteETATable() {
           '',
           '',
           '',
-          <><Button href={`/bus_route/${ allBusRouteData.response.data[i].route}/${ allBusRouteData.response.data[i].bound}/${ allBusRouteData.response.data[i].service_type}`}>時間</Button></>
+          <><Button href={`/nwfb_route/${ allBusRouteData.response.data[i].route}/${ allBusRouteData.response.data[i].bound}/${ allBusRouteData.response.data[i].service_type}`}>時間</Button></>
           ,
         ])
       }
@@ -120,9 +120,10 @@ function KmbRouteETATable() {
   };
   return (
     <>
+      <h1>所有新巴路線</h1>
       <SortableTable config={config} sort={sort} data={data} filter={filter}></SortableTable>
     </>
   );
 }
 
-export default KmbRouteETATable;
+export default AllNWFBRouteTable;

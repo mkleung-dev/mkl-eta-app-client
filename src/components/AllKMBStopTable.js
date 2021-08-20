@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Table } from 'react-bootstrap';
-import './AllKmbStopTable.css';
+import './AllKMBStopTable.css';
 
 const initialState = {
   error: null,
@@ -8,7 +8,7 @@ const initialState = {
   response: null,
 };
 
-function AllKmbStopTable() {
+function AllKMBStopTable() {
   const [ allBusStopData, setAllBusStopData ] = useState(initialState)
 
   useEffect(() => {
@@ -60,4 +60,4 @@ function AllKmbStopTable() {
   );
 }
 
-export default AllKmbStopTable;
+export default AllKMBStopTable;

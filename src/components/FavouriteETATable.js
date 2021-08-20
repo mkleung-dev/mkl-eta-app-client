@@ -27,15 +27,15 @@ function FavouriteETATable() {
   }, []);
 
   const fetchStop = (() => {
-    let favourites = {"KmbFavourites": []};
-    let favouritesString = localStorage.getItem('KmbFavourites');
+    let favourites = {"KMBFavourites": []};
+    let favouritesString = localStorage.getItem('KMBFavourites');
     if (favouritesString) {
       favourites = JSON.parse(favouritesString)
     }
     let favouriteBuffer = favourites;
     let requests = [];
-    for (let i = 0; i < favouriteBuffer["KmbFavourites"].length; i++) {
-      let temp = 'https://data.etabus.gov.hk/v1/transport/kmb/stop/' + favouriteBuffer["KmbFavourites"][i].stop;
+    for (let i = 0; i < favouriteBuffer["KMBFavourites"].length; i++) {
+      let temp = 'https://data.etabus.gov.hk/v1/transport/kmb/stop/' + favouriteBuffer["KMBFavourites"][i].stop;
       let add = true;
       for (let j = 0; j < requests.length; j++) {
         if (temp === requests[j]) {
@@ -69,18 +69,18 @@ function FavouriteETATable() {
   })
 
   const fetchEta = ((update) => {
-    let favourites = {"KmbFavourites": []};
-    let favouritesString = localStorage.getItem('KmbFavourites');
+    let favourites = {"KMBFavourites": []};
+    let favouritesString = localStorage.getItem('KMBFavourites');
     if (favouritesString) {
       favourites = JSON.parse(favouritesString)
     }
     let favouriteBuffer = favourites;
     let requests = [];
-    for (let i = 0; i < favouriteBuffer["KmbFavourites"].length; i++) {
+    for (let i = 0; i < favouriteBuffer["KMBFavourites"].length; i++) {
       let temp = 'https://data.etabus.gov.hk/v1/transport/kmb/eta/' + 
-                 favouriteBuffer["KmbFavourites"][i].stop + '/' + 
-                 favouriteBuffer["KmbFavourites"][i].route + '/' + 
-                 favouriteBuffer["KmbFavourites"][i].service_type;
+                 favouriteBuffer["KMBFavourites"][i].stop + '/' + 
+                 favouriteBuffer["KMBFavourites"][i].route + '/' + 
+                 favouriteBuffer["KMBFavourites"][i].service_type;
       requests.push(temp)
     }
     let promises = [];
@@ -93,10 +93,10 @@ function FavouriteETATable() {
     })))
     .then(function handleData(data) {
       let wholeEta = [];
-      for (let i = 0; i < favouriteBuffer["KmbFavourites"].length; i++) {
-        let etaRow = favouriteBuffer["KmbFavourites"][i];
+      for (let i = 0; i < favouriteBuffer["KMBFavourites"].length; i++) {
+        let etaRow = favouriteBuffer["KMBFavourites"][i];
         
-        etaRow["stop_tc"] = nameMap.data[favouriteBuffer["KmbFavourites"][i].stop].name_tc;
+        etaRow["stop_tc"] = nameMap.data[favouriteBuffer["KMBFavourites"][i].stop].name_tc;
         etaRow["eta"] = [];
         
         for (let k = 0; k < data[i].data.length; k++) {
@@ -132,9 +132,9 @@ function FavouriteETATable() {
   })
 
   const removeFromFavourites = ((eta) => {
-    let backupFavourites = {"KmbFavourites": []};
-    let favourites = {"KmbFavourites": []};
-    let favouritesString = localStorage.getItem('KmbFavourites');
+    let backupFavourites = {"KMBFavourites": []};
+    let favourites = {"KMBFavourites": []};
+    let favouritesString = localStorage.getItem('KMBFavourites');
     if (favouritesString) {
       favourites = JSON.parse(favouritesString)
     }
@@ -144,16 +144,16 @@ function FavouriteETATable() {
       "service_type": eta.service_type,
       "stop": eta.stop};
 
-    for (let i = 0; i < favourites["KmbFavourites"].length; i++) {
-      if (favourites["KmbFavourites"][i].route === favourite.route &&
-          favourites["KmbFavourites"][i].bound === favourite.bound &&
-          favourites["KmbFavourites"][i].service_type === favourite.service_type &&
-          favourites["KmbFavourites"][i].stop === favourite.stop) {
+    for (let i = 0; i < favourites["KMBFavourites"].length; i++) {
+      if (favourites["KMBFavourites"][i].route === favourite.route &&
+          favourites["KMBFavourites"][i].bound === favourite.bound &&
+          favourites["KMBFavourites"][i].service_type === favourite.service_type &&
+          favourites["KMBFavourites"][i].stop === favourite.stop) {
       } else {
-        backupFavourites["KmbFavourites"].push(favourites["KmbFavourites"][i]);
+        backupFavourites["KMBFavourites"].push(favourites["KMBFavourites"][i]);
       }
     }
-    localStorage.setItem('KmbFavourites', JSON.stringify(backupFavourites));
+    localStorage.setItem('KMBFavourites', JSON.stringify(backupFavourites));
     fetchEta(false);
   })
 
