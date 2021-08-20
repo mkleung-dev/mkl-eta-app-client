@@ -20,6 +20,8 @@ function App() {
           {/*<Nav.Link href="/all_bus_stop">All Bus Stop</Nav.Link>*/}
         </Nav>
       </Navbar>
+      <Container>資料來源：資料一線通<a target="_blank" href="https://data.gov.hk">DATA.GOV.HK</a></Container>
+      <Container>原始數據的知識產權擁有人：九龍巴士(一九三三)有限公司 (簡稱「九巴」) 及 龍運巴士有限公司 (簡稱「龍運」)</Container>
       <Router>
         <Switch>
           <Route exact path="/">
